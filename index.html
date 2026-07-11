@@ -747,12 +747,27 @@
       var open = menu.classList.toggle("open");
       burger.setAttribute("aria-expanded", open ? "true" : "false");
     });
-    menu.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") {
-        menu.classList.remove("open");
-        burger.setAttribute("aria-expanded", "false");
-      }
-    });
+  }
+
+  // scroll halus tanpa naruh # di URL
+  document.addEventListener("click", function (e) {
+    var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!link) return;
+    var id = link.getAttribute("href").slice(1);
+    var target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    e.preventDefault();
+    if (menu && burger) {
+      menu.classList.remove("open");
+      burger.setAttribute("aria-expanded", "false");
+    }
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  });
+
+  // bersihin hash kalau ada yang nyangkut
+  if (window.location.hash && window.history.replaceState) {
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
   }
 
 
