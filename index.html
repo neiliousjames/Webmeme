@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PATRICK - the chonkiest coin on chain</title>
+<meta name="description" content="PATRICK is a community memecoin. No tax, no VC, no plan. Just chonk" />
+<meta property="og:title" content="PATRICK" />
+<meta property="og:description" content="The chonkiest coin on chain" />
+<meta property="og:image" content="assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<style>
+  :root{
+    --green:#00C805;
+    --green-deep:#00A104;
+    --green-dark:#04310A;
+    --white:#FFFFFF;
+    --pink:#FFFFFF;      /* accent surface, kept as var for reuse */
+    --pink-deep:#04310A;
+    --ink:#04150A;
+    --cream:#F2FFF3;
+    --nav-h:72px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none !important;transition:none !important}
+  }
+  body{
+    background:var(--green);
+    color:var(--ink);
+    font-family:"Fredoka",system-ui,sans-serif;
+    font-weight:500;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* squiggle texture */
+  body::before{
+    content:"";
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 30c20-20 40 20 60 0s40-20 60 0M0 90c20-20 40 20 60 0s40-20 60 0' fill='none' stroke='%23000' stroke-opacity='.05' stroke-width='4'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+  }
+  .wrap{position:relative;z-index:1;width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,24px)}
+
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:6px}
+
+  /* ---------- NAV ---------- */
+  header{position:sticky;top:0;z-index:50;padding:clamp(10px,2vw,14px) 0}
+  .nav{
+    display:flex;align-items:center;gap:14px;
+    background:var(--green);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    box-shadow:0 5px 0 var(--ink);
+    padding:8px 8px 8px 8px;
+  }
+  .brand{
+    font-family:"Luckiest Guy",cursive;
+    letter-spacing:.06em;
+    font-size:20px;
+    color:var(--green);
+    -webkit-text-stroke:2px var(--ink);
+    paint-order:stroke fill;
+    background:var(--white);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:6px 18px 3px;
+    white-space:nowrap;
+  }
+  .links{display:flex;gap:26px;margin:0 auto;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+  .links a{position:relative;padding:4px 0}
+  .links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:3px;background:var(--pink-deep);border-radius:3px;transition:right .22s ease}
+  .links a:hover::after{right:0}
+  .icons{display:flex;align-items:center;gap:8px}
+  .icon-btn{
+    width:38px;height:38px;display:grid;place-items:center;
+    background:var(--pink);border:3px solid var(--ink);border-radius:999px;
+    transition:transform .15s ease;
+  }
+  .icon-btn:hover{transform:translateY(-2px) rotate(-6deg)}
+  .icon-btn svg{width:17px;height:17px;fill:var(--ink)}
+  .buy{
+    font-family:"Luckiest Guy",cursive;font-size:13px;letter-spacing:.08em;
+    background:var(--pink);border:3px solid var(--ink);border-radius:999px;
+    box-shadow:0 4px 0 var(--ink);
+    padding:9px 16px 6px;white-space:nowrap;
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .buy:hover{transform:translateY(2px);box-shadow:0 2px 0 var(--ink)}
+  .burger{display:none;width:42px;height:42px;background:var(--pink);border:3px solid var(--ink);border-radius:999px;cursor:pointer}
+  .burger span{display:block;width:16px;height:3px;margin:3px auto;background:var(--ink);border-radius:3px}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;padding:26px 0 0;text-align:center;overflow:hidden}
+  .hero::after{
+    content:"";position:absolute;left:50%;top:46%;width:min(820px,120vw);aspect-ratio:1;
+    transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.6) 0%,rgba(0,200,5,0) 62%);
+    pointer-events:none;
+  }
+  .title{
+    position:relative;z-index:2;
+    font-family:"Luckiest Guy",cursive;
+    font-size:clamp(62px,15.5vw,190px);
+    line-height:.92;
+    letter-spacing:.02em;
+    color:var(--white);
+    -webkit-text-stroke:8px var(--ink);
+    paint-order:stroke fill;
+    text-shadow:10px 12px 0 var(--ink);
+    animation:bob 4.5s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+  .mascot{position:relative;z-index:3;margin:-4% auto 0;width:min(560px,84vw);animation:bob 5.5s ease-in-out infinite .3s}
+  .mascot img{width:100%;display:block;background:#fff;border:6px solid var(--ink);border-radius:34px;box-shadow:12px 14px 0 var(--ink);transform:rotate(-1.5deg)}
+  .mascot-slot{
+    display:grid;place-items:center;text-align:center;
+    aspect-ratio:1;border:5px dashed var(--ink);border-radius:32px;
+    background:rgba(255,255,255,.45);
+    font-family:"Luckiest Guy",cursive;font-size:16px;letter-spacing:.06em;padding:20px;
+  }
+  .coin{position:absolute;z-index:1;width:clamp(44px,6vw,88px);pointer-events:none;animation:float 6s ease-in-out infinite}
+  .c1{left:6%;top:34%}
+  .c2{right:7%;top:26%;animation-delay:1.1s}
+  .c3{left:16%;top:64%;animation-delay:.6s}
+  .c4{right:14%;top:70%;animation-delay:1.7s}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-12deg)}50%{transform:translateY(-24px) rotate(14deg)}}
+  .spark{position:absolute;z-index:2;font-family:"Luckiest Guy",cursive;color:var(--ink);font-size:clamp(18px,3vw,34px);animation:twinkle 2.6s ease-in-out infinite}
+  .s1{left:20%;top:16%}
+  .s2{right:19%;top:12%;animation-delay:.9s}
+  .s3{left:11%;top:48%;animation-delay:1.5s}
+  @keyframes twinkle{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{
+    position:relative;z-index:4;
+    background:var(--pink);
+    border-top:4px solid var(--ink);border-bottom:4px solid var(--ink);
+    transform:rotate(-2.2deg) scale(1.06);
+    margin:-30px 0 46px;
+    padding:12px 0;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+  .marquee.rev{transform:rotate(2.2deg) scale(1.06);margin:60px 0 60px;background:var(--ink);color:var(--green)}
+  .track{display:inline-flex;gap:34px;animation:slide 26s linear infinite;font-family:"Luckiest Guy",cursive;font-size:20px;letter-spacing:.1em;padding-right:34px}
+  .marquee.rev .track{animation-direction:reverse}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- SECTIONS ---------- */
+  section{position:relative;z-index:1;padding:clamp(28px,6vw,56px) 0;scroll-margin-top:96px}
+  .eyebrow{
+    display:inline-block;font-family:"Luckiest Guy",cursive;font-size:14px;letter-spacing:.14em;
+    background:var(--ink);color:var(--green);padding:7px 16px 4px;border-radius:999px;margin-bottom:16px;
+  }
+  h2{
+    font-family:"Luckiest Guy",cursive;
+    font-size:clamp(38px,7vw,74px);line-height:1;letter-spacing:.02em;
+    color:var(--white);-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;
+    text-shadow:6px 7px 0 var(--ink);
+    margin-bottom:22px;
+  }
+  .card{
+    background:var(--cream);
+    border:4px solid var(--ink);
+    border-radius:28px;
+    box-shadow:8px 9px 0 var(--ink);
+    padding:26px;
+  }
+  .lead{font-size:clamp(17px,2.2vw,21px);line-height:1.6;max-width:62ch}
+  .lead + .lead{margin-top:14px}
+  .wat{display:grid;grid-template-columns:1.25fr .75fr;gap:26px;align-items:center}
+  .stamp{
+    display:grid;place-items:center;text-align:center;
+    background:var(--green-dark);color:var(--green);border:4px solid var(--ink);border-radius:28px;
+    box-shadow:8px 9px 0 var(--ink);
+    padding:30px;font-family:"Luckiest Guy",cursive;
+    font-size:clamp(24px,3.4vw,40px);line-height:1.15;letter-spacing:.03em;
+    transform:rotate(-3deg);
+  }
+
+  /* ---------- MEME MAKER ---------- */
+  .maker{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+  .canvas-box{background:var(--cream);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 9px 0 var(--ink);padding:16px}
+  canvas{width:100%;height:auto;display:block;border:3px solid var(--ink);border-radius:18px;background:#fff}
+  .field{margin-bottom:14px}
+  label{display:block;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  input[type=text],input[type=file]{
+    width:100%;font-family:"Fredoka",sans-serif;font-size:16px;font-weight:600;
+    background:var(--cream);color:var(--ink);
+    border:3px solid var(--ink);border-radius:16px;padding:12px 14px;
+  }
+  input[type=file]{padding:9px 12px;cursor:pointer}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    font-family:"Luckiest Guy",cursive;font-size:15px;letter-spacing:.06em;
+    border:4px solid var(--ink);border-radius:999px;
+    box-shadow:0 5px 0 var(--ink);
+    padding:12px 22px 9px;cursor:pointer;background:var(--pink);color:var(--ink);
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+  .btn.alt{background:var(--ink);color:var(--green)}
+
+  /* ---------- CHONKENOMICS ---------- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:22px}
+  .stat{background:var(--cream);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 9px 0 var(--ink);padding:24px;text-align:center}
+  .stat b{display:block;font-family:"Luckiest Guy",cursive;font-size:clamp(28px,4vw,44px);color:var(--green-deep);line-height:1.1}
+  .stat span{font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .ca{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+  .ca code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;word-break:break-all;font-weight:600}
+
+  /* ---------- MERCH ---------- */
+  .merch{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .item{background:var(--cream);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 9px 0 var(--ink);padding:16px;transition:transform .16s ease}
+  .item:hover{transform:translateY(-6px) rotate(-1.5deg)}
+  .thumb{aspect-ratio:1;border:3px dashed var(--ink);border-radius:18px;background:var(--green);display:grid;place-items:center;font-family:"Luckiest Guy",cursive;letter-spacing:.06em;margin-bottom:12px;text-align:center;padding:12px}
+  .item h3{font-family:"Luckiest Guy",cursive;font-size:22px;letter-spacing:.04em;margin-bottom:4px}
+  .item p{font-weight:600;font-size:14px}
+
+  /* ---------- FOOTER ---------- */
+  footer{position:relative;z-index:1;background:var(--ink);color:var(--white);border-top:5px solid var(--ink);margin-top:40px;padding:44px 0 34px;text-align:center}
+  .foot-mark{font-family:"Luckiest Guy",cursive;font-size:clamp(40px,9vw,90px);color:var(--green);letter-spacing:.04em}
+  .foot-links{display:flex;gap:18px;justify-content:center;margin:16px 0 18px;flex-wrap:wrap;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+  .disclaimer{font-size:12px;opacity:.7;max-width:56ch;margin:0 auto;line-height:1.6}
+
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);
+    z-index:99;background:var(--ink);color:var(--green);
+    font-family:"Luckiest Guy",cursive;letter-spacing:.06em;
+    border:3px solid var(--green);border-radius:999px;padding:11px 22px 8px;
+    transition:transform .28s ease;
+  }
+  .toast.show{transform:translate(-50%,0)}
+
+  /* ---------- SWAP ---------- */
+  .swap-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+  .swap{background:var(--cream);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 9px 0 var(--ink);padding:20px}
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:4px;margin-bottom:16px}
+  .tab{
+    font-family:"Luckiest Guy",cursive;font-size:15px;letter-spacing:.08em;
+    border:0;border-radius:999px;padding:11px 10px 8px;cursor:pointer;
+    background:transparent;color:var(--green);
+  }
+  .tab.active{background:var(--green);color:var(--ink)}
+  .leg{background:var(--white);border:3px solid var(--ink);border-radius:20px;padding:14px 16px;margin-bottom:10px}
+  .leg-top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+  .leg-top button{background:none;border:0;font:inherit;color:var(--green-deep);cursor:pointer;text-decoration:underline}
+  .leg-row{display:flex;align-items:center;gap:12px}
+  .leg-row input{
+    flex:1;min-width:0;border:0;background:none;outline:none;
+    font-family:"Luckiest Guy",cursive;font-size:30px;color:var(--ink);letter-spacing:.02em;padding:0;
+  }
+  .leg-row input::placeholder{color:rgba(4,21,10,.25)}
+  .sym{
+    font-family:"Luckiest Guy",cursive;font-size:15px;letter-spacing:.06em;white-space:nowrap;
+    background:var(--green);border:3px solid var(--ink);border-radius:999px;padding:8px 14px 5px;
+  }
+  .swap-arrow{display:grid;place-items:center;margin:-4px 0 6px}
+  .swap-arrow span{width:38px;height:38px;display:grid;place-items:center;background:var(--ink);color:var(--green);border-radius:999px;font-family:"Luckiest Guy",cursive}
+  .swap-meta{display:flex;justify-content:space-between;font-weight:600;font-size:13px;margin:12px 2px}
+  .swap-meta select{font:inherit;font-weight:700;background:var(--white);border:2px solid var(--ink);border-radius:10px;padding:3px 8px}
+  .btn.block{display:block;width:100%;text-align:center;font-size:18px;padding:15px 20px 12px}
+  .status{margin-top:12px;font-weight:600;font-size:13px;line-height:1.5;word-break:break-all;min-height:20px}
+  .status a{text-decoration:underline}
+  .warn{font-size:12px;font-weight:600;opacity:.75;margin-top:10px;line-height:1.5}
+
+
+  /* ---------- GALLERY ---------- */
+  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .art{position:relative;background:var(--white);border:6px solid var(--ink);border-radius:32px;box-shadow:12px 14px 0 var(--ink);overflow:hidden}
+  .art:nth-child(1){transform:rotate(-1.6deg)}
+  .art:nth-child(2){transform:rotate(1.6deg)}
+  .art img{display:block;width:100%;height:auto;transition:transform .5s ease}
+  .art:hover img{transform:scale(1.04)}
+  .art figcaption{
+    position:absolute;left:14px;bottom:14px;
+    font-family:"Luckiest Guy",cursive;font-size:14px;letter-spacing:.08em;
+    background:var(--ink);color:var(--green);
+    border:3px solid var(--green);border-radius:999px;padding:8px 14px 5px;
+  }
+
+  /* ================= RESPONSIVE ================= */
+
+  /* laptop / small desktop */
+  @media (max-width:1100px){
+    .links{gap:18px;font-size:13px}
+    .card,.stat,.item,.canvas-box,.swap,.stamp{box-shadow:6px 7px 0 var(--ink)}
+    .merch{gap:18px}
+  }
+
+  /* tablet */
+  @media (max-width:860px){
+    .links{display:none}
+    .burger{display:block}
+    .nav{gap:10px;justify-content:space-between;padding:7px}
+    .brand{font-size:17px;padding:6px 14px 3px}
+    .buy{display:none}
+    .icon-btn{width:36px;height:36px}
+
+    .mobile-menu{display:none;flex-direction:column;gap:2px;margin-top:10px;background:var(--cream);border:3px solid var(--ink);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--ink)}
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{font-family:"Luckiest Guy",cursive;letter-spacing:.08em;padding:11px 8px;border-radius:14px}
+    .mobile-menu a:active{background:var(--green)}
+    .mobile-menu .buy{display:block;text-align:center;margin-top:6px}
+
+    .wat,.maker,.swap-grid{grid-template-columns:1fr}
+    .gallery{gap:22px}
+    .art{border-width:5px;border-radius:26px;box-shadow:8px 10px 0 var(--ink)}
+    .maker > div:last-child{order:-1}          /* canvas di atas kontrol */
+    .swap-grid > .card{order:2}
+    .merch{grid-template-columns:repeat(2,1fr)}
+    .stats{grid-template-columns:1fr;gap:14px}
+    .stat{padding:18px;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:14px}
+    .stat b{font-size:clamp(24px,6vw,34px)}
+
+    .title{-webkit-text-stroke:6px var(--ink);text-shadow:7px 8px 0 var(--ink)}
+    h2{-webkit-text-stroke:4px var(--ink);text-shadow:5px 6px 0 var(--ink)}
+    .stamp{transform:none;padding:24px}
+    .mascot{margin-top:-3%;width:min(460px,88vw)}
+    .mascot img{border-width:5px;border-radius:28px;box-shadow:8px 10px 0 var(--ink)}
+    .coin{width:clamp(38px,9vw,58px)}
+    .c1{left:2%;top:38%}
+    .c2{right:2%;top:30%}
+    .c3{left:8%;top:70%}
+    .c4{right:6%;top:74%}
+    .spark{font-size:20px}
+    .marquee{transform:rotate(-2.4deg) scale(1.1);margin:-22px 0 34px}
+    .marquee.rev{transform:rotate(2.4deg) scale(1.1);margin:36px 0}
+    .track{font-size:16px;gap:24px}
+  }
+
+  /* phone */
+  @media (max-width:560px){
+    .hero{padding-top:14px}
+    .title{font-size:clamp(52px,17vw,86px);-webkit-text-stroke:4px var(--ink);text-shadow:5px 6px 0 var(--ink)}
+    .mascot{margin-top:-1%;width:min(360px,88vw)}
+    .mascot img{border-width:4px;border-radius:22px;box-shadow:6px 7px 0 var(--ink)}
+    .s1{left:6%;top:12%}
+    .s2{right:6%;top:9%}
+    .s3{display:none}
+    .c3,.c4{display:none}
+
+    h2{font-size:clamp(32px,10vw,44px);-webkit-text-stroke:3px var(--ink);text-shadow:4px 5px 0 var(--ink);margin-bottom:16px}
+    .eyebrow{font-size:12px;padding:6px 13px 3px}
+    .lead{font-size:16px;line-height:1.55}
+
+    .card,.stat,.item,.canvas-box,.swap{padding:18px;border-width:3px;border-radius:22px;box-shadow:5px 6px 0 var(--ink)}
+    .stamp{padding:20px;border-width:3px;border-radius:22px;box-shadow:5px 6px 0 var(--ink);font-size:clamp(22px,6.5vw,30px)}
+    .merch{grid-template-columns:1fr;gap:16px}
+    .gallery{grid-template-columns:1fr;gap:22px}
+    .art{border-width:4px;border-radius:22px;box-shadow:6px 7px 0 var(--ink);transform:none}
+    .art:nth-child(1),.art:nth-child(2){transform:none}
+    .art figcaption{font-size:12px;left:10px;bottom:10px}
+    .item:hover{transform:none}
+
+    .btn{width:100%;font-size:15px;padding:14px 18px 11px;border-width:3px}
+    .btn-row{gap:8px}
+    .ca{flex-direction:column;align-items:stretch;gap:14px}
+    .ca code{font-size:12px}
+
+    .leg{padding:12px 14px;border-radius:18px}
+    .leg-row input{font-size:26px}
+    .sym{font-size:13px;padding:7px 11px 4px}
+    .tab{font-size:14px;padding:12px 8px 9px}
+    .leg-top{font-size:11px;letter-spacing:.08em}
+
+    .foot-links{gap:12px;font-size:12px}
+    footer{padding:34px 0 28px}
+  }
+
+  /* small phone */
+  @media (max-width:400px){
+    .title{-webkit-text-stroke:3px var(--ink);text-shadow:4px 5px 0 var(--ink)}
+    .brand{font-size:15px;padding:6px 12px 3px}
+    .icon-btn{width:33px;height:33px;border-width:2px}
+    .coin{display:none}
+    .track{font-size:14px;gap:18px}
+    .leg-row input{font-size:22px}
+  }
+
+  /* desktop only */
+  @media (min-width:861px){
+    .mobile-menu{display:none}
+  }
+
+  /* touch: matiin hover transform biar nggak nyangkut */
+  @media (hover:none){
+    .item:hover,.icon-btn:hover,.buy:hover,.btn:hover{transform:none;box-shadow:0 5px 0 var(--ink)}
+    .links a:hover::after{right:100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="#top" class="brand">PATRICK</a>
+      <div class="links">
+        <a href="#wat">Wat?</a>
+        <a href="#gallery">Lore</a>
+        <a href="#maker">Make a chonky</a>
+        <a href="#merch">Merch</a>
+        <a href="#chonkenomics">Chonkenomics</a>
+      </div>
+      <div class="icons">
+        <a class="icon-btn" href="https://t.me/" target="_blank" rel="noopener" aria-label="Telegram">
+          <svg viewBox="0 0 24 24"><path d="M21.9 3.4 2.6 10.9c-1 .4-1 1.7.1 2l4.9 1.5 1.9 5.7c.3.9 1.4 1.1 2 .4l2.7-2.9 4.8 3.5c.8.6 1.9.1 2-.9L23.9 4.6c.2-1-.9-1.7-2-1.2ZM9.6 14.3l-.3 3.6-1.2-3.7 9-6.6-7.5 6.7Z"/></svg>
+        </a>
+        <a class="icon-btn" href="https://x.com/" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24"><path d="M18.2 2h3.3l-7.2 8.3L23 22h-6.7l-5.2-6.9L5.1 22H1.8l7.7-8.9L1 2h6.8l4.7 6.3L18.2 2Zm-1.2 18h1.8L7.1 3.9H5.2L17 20Z"/></svg>
+        </a>
+        <a class="buy" href="#swap">Buy now</a>
+      </div>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#wat">Wat?</a>
+      <a href="#gallery">Lore</a>
+      <a href="#maker">Make a chonky</a>
+      <a href="#merch">Merch</a>
+      <a href="#chonkenomics">Chonkenomics</a>
+      <a class="buy" href="#swap">Buy now</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap">
+      <span class="spark s1">✦</span>
+      <span class="spark s2">✦</span>
+      <span class="spark s3">✧</span>
+      <img class="coin c1" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
+      <img class="coin c2" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
+      <img class="coin c3" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
+      <img class="coin c4" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
+      <h1 class="title">PATRICK</h1>
+      <div class="mascot" id="mascotWrap">
+        <div class="mascot-slot" id="mascotSlot">Drop your mascot at assets/mascot.png</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee">
+    <div class="track" id="track1"></div>
+  </div>
+
+  <!-- WAT -->
+  <section id="wat">
+    <div class="wrap">
+      <span class="eyebrow">Wat?</span>
+      <h2>Wat is this</h2>
+      <div class="wat">
+        <div class="card">
+          <p class="lead">PATRICK is a coin. That is the whole roadmap. It sits under a rock, it eats, it goes up, it goes down, it eats again</p>
+          <p class="lead">No utility, no vesting cliff, no 40 page deck. The contract is renounced, the liquidity is burned, and the only thing left to do is be chonky together</p>
+          <p class="lead">If you get it, you get it. If you do not, that is also fine, the rock has room</p>
+        </div>
+        <div class="stamp">CHONK<br />IS A<br />LIFESTYLE</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee rev">
+    <div class="track" id="track2"></div>
+  </div>
+
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="wrap">
+      <span class="eyebrow">The lore</span>
+      <h2>The lore</h2>
+      <div class="gallery">
+        <figure class="art">
+          <img src="assets/art-1.png" alt="The poet in the field" loading="lazy" />
+          <figcaption>The poet</figcaption>
+        </figure>
+        <figure class="art">
+          <img src="assets/art-2.png" alt="The matador in the ring" loading="lazy" />
+          <figcaption>The matador</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEME MAKER -->
+  <section id="maker">
+    <div class="wrap">
+      <span class="eyebrow">Make a chonky</span>
+      <h2>Make a chonky</h2>
+      <div class="maker">
+        <div>
+          <div class="card">
+            <div class="field">
+              <label for="file">Your picture</label>
+              <input type="file" id="file" accept="image/*" />
+            </div>
+            <div class="field">
+              <label for="top">Top text</label>
+              <input type="text" id="top" value="WHEN THE CHART" maxlength="40" />
+            </div>
+            <div class="field">
+              <label for="bottom">Bottom text</label>
+              <input type="text" id="bottom" value="GOES CHONK" maxlength="40" />
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="download">Download meme</button>
+              <button class="btn alt" id="reset">Start over</button>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvas" width="800" height="800"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SWAP -->
+  <section id="swap">
+    <div class="wrap">
+      <span class="eyebrow">Swap</span>
+      <h2>Buy or sell</h2>
+      <div class="swap-grid">
+        <div class="swap">
+          <div class="tabs">
+            <button class="tab active" id="tabBuy" type="button">Buy</button>
+            <button class="tab" id="tabSell" type="button">Sell</button>
+          </div>
+
+          <div class="leg">
+            <div class="leg-top">
+              <span id="payLabel">You pay</span>
+              <button type="button" id="maxBtn">Balance <span id="payBal">0</span> - Max</button>
+            </div>
+            <div class="leg-row">
+              <input id="amountIn" type="text" inputmode="decimal" placeholder="0" autocomplete="off" />
+              <span class="sym" id="paySym">ETH</span>
+            </div>
+          </div>
+
+          <div class="swap-arrow"><span id="flipBtn" role="button" tabindex="0" aria-label="Flip direction">v</span></div>
+
+          <div class="leg">
+            <div class="leg-top">
+              <span>You receive (estimate)</span>
+              <span>Balance <span id="getBal">0</span></span>
+            </div>
+            <div class="leg-row">
+              <input id="amountOut" type="text" placeholder="0" readonly />
+              <span class="sym" id="getSym">PATRICK</span>
+            </div>
+          </div>
+
+          <div class="swap-meta">
+            <span>Slippage</span>
+            <select id="slippage">
+              <option value="1">1%</option>
+              <option value="3">3%</option>
+              <option value="5" selected>5%</option>
+              <option value="10">10%</option>
+              <option value="15">15%</option>
+            </select>
+          </div>
+
+          <button class="btn block" id="actionBtn" type="button">Connect wallet</button>
+          <div class="status" id="status"></div>
+          <p class="warn">Trading a meme coin can lose you everything. Confirm the contract address before you swap</p>
+        </div>
+
+        <div class="card">
+          <p class="lead">Connect any injected wallet. The site will ask you to switch to the right network, then route the trade through the Uniswap V3 pool</p>
+          <p class="lead">Buy sends ETH straight into the pool. Sell asks for one approval the first time, then unwraps back to ETH in the same transaction</p>
+          <p class="lead">Prices move fast. If a swap fails, raise the slippage and try again</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHONKENOMICS -->
+  <section id="chonkenomics">
+    <div class="wrap">
+      <span class="eyebrow">Chonkenomics</span>
+      <h2>Chonkenomics</h2>
+      <div class="stats">
+        <div class="stat"><b>1,000,000,000</b><span>Total supply</span></div>
+        <div class="stat"><b>0 / 0</b><span>Buy and sell tax</span></div>
+        <div class="stat"><b>100%</b><span>LP burned</span></div>
+      </div>
+      <div class="card ca">
+        <div>
+          <span class="eyebrow" style="margin:0 0 8px">Contract</span>
+          <code id="caText">0x0000000000000000000000000000000000000000</code>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="copyCa">Copy address</button>
+          <a class="btn alt" href="#swap">Open swap</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MERCH -->
+  <section id="merch">
+    <div class="wrap">
+      <span class="eyebrow">Merch</span>
+      <h2>Merch</h2>
+      <div class="merch">
+        <div class="item">
+          <div class="thumb" style="background-image:url(assets/art-1.png);background-size:cover;background-position:center"></div>
+          <h3>Chonk tee</h3>
+          <p>Heavyweight cotton. Fits like a rock</p>
+        </div>
+        <div class="item">
+          <div class="thumb" style="background-image:url(assets/art-2.png);background-size:cover;background-position:center"></div>
+          <h3>Rock cap</h3>
+          <p>For when the sun is up and the chart is not</p>
+        </div>
+        <div class="item">
+          <div class="thumb">assets/merch-3.png</div>
+          <h3>Sticker pack</h3>
+          <p>Twelve stickers. Zero utility. Perfect</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-mark">PATRICK</div>
+    <div class="foot-links">
+      <a href="#wat">Wat?</a>
+      <a href="#maker">Make a chonky</a>
+      <a href="#merch">Merch</a>
+      <a href="#chonkenomics">Chonkenomics</a>
+      <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://x.com/" target="_blank" rel="noopener">X</a>
+    </div>
+    <p class="disclaimer">PATRICK is a meme coin with no intrinsic value or expectation of financial return. There is no team, no roadmap, and no promises. Do your own research</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // marquee tracks
+  var ticker = "$ PATRICK";
+  var tracks = [document.getElementById("track1"), document.getElementById("track2")];
+  tracks.forEach(function (t) {
+    if (!t) return;
+    var html = "";
+    for (var i = 0; i < 24; i++) {
+      html += "<span>" + ticker + "</span><span>&bull;</span>";
+    }
+    t.innerHTML = html;
+  });
+
+  // mobile menu
+  var burger = document.getElementById("burger");
+  var menu = document.getElementById("mobileMenu");
+  if (burger && menu) {
+    burger.addEventListener("click", function () {
+      var open = menu.classList.toggle("open");
+      burger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    menu.addEventListener("click", function (e) {
+      if (e.target.tagName === "A") {
+        menu.classList.remove("open");
+        burger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  // swap mascot slot for real art if present
+  var mascotWrap = document.getElementById("mascotWrap");
+  if (mascotWrap) {
+    var probe = new Image();
+    probe.onload = function () {
+      mascotWrap.innerHTML = "";
+      probe.alt = "PATRICK mascot";
+      probe.style.width = "100%";
+      probe.style.display = "block";
+      mascotWrap.appendChild(probe);
+    };
+    probe.src = "assets/mascot.png";
+  }
+
+  // toast
+  var toast = document.getElementById("toast");
+  function say(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add("show");
+    window.setTimeout(function () { toast.classList.remove("show"); }, 1600);
+  }
+
+  // copy contract
+  var copyBtn = document.getElementById("copyCa");
+  var caText = document.getElementById("caText");
+  if (copyBtn && caText) {
+    copyBtn.addEventListener("click", function () {
+      var value = caText.textContent.trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(function () { say("Copied"); }, function () { say("Copy failed"); });
+      } else {
+        var tmp = document.createElement("textarea");
+        tmp.value = value;
+        document.body.appendChild(tmp);
+        tmp.select();
+        try { document.execCommand("copy"); say("Copied"); } catch (err) { say("Copy failed"); }
+        document.body.removeChild(tmp);
+      }
+    });
+  }
+
+  // meme maker
+  var canvas = document.getElementById("canvas");
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext("2d");
+  var topInput = document.getElementById("top");
+  var bottomInput = document.getElementById("bottom");
+  var fileInput = document.getElementById("file");
+  var img = null;
+
+  function drawPlaceholder() {
+    ctx.fillStyle = "#00C805";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#04150A";
+    ctx.lineWidth = 10;
+    ctx.setLineDash([22, 18]);
+    ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#04150A";
+    ctx.font = "36px 'Luckiest Guy', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Pick a picture", canvas.width / 2, canvas.height / 2);
+  }
+
+  function outline(text, x, y) {
+    ctx.font = "72px 'Luckiest Guy', sans-serif";
+    ctx.textAlign = "center";
+    ctx.lineJoin = "round";
+    ctx.miterLimit = 2;
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = "#04150A";
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillText(text, x, y);
+  }
+
+  function render() {
+    if (!img) {
+      drawPlaceholder();
+    } else {
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      var scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      var w = img.width * scale;
+      var h = img.height * scale;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+    }
+    var t = (topInput.value || "").toUpperCase();
+    var b = (bottomInput.value || "").toUpperCase();
+    if (t) outline(t, canvas.width / 2, 90);
+    if (b) outline(b, canvas.width / 2, canvas.height - 44);
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function (ev) {
+        var loaded = new Image();
+        loaded.onload = function () { img = loaded; render(); };
+        loaded.src = ev.target.result;
+      };
+      reader.readAsDataURL(f);
+    });
+  }
+
+  topInput.addEventListener("input", render);
+  bottomInput.addEventListener("input", render);
+
+  var dl = document.getElementById("download");
+  if (dl) {
+    dl.addEventListener("click", function () {
+      var a = document.createElement("a");
+      a.download = "patrick-meme.png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      say("Downloaded");
+    });
+  }
+
+  var reset = document.getElementById("reset");
+  if (reset) {
+    reset.addEventListener("click", function () {
+      img = null;
+      if (fileInput) fileInput.value = "";
+      topInput.value = "";
+      bottomInput.value = "";
+      render();
+    });
+  }
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(render);
+  }
+  render();
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ====================================================================
+     CONFIG - isi ini semua sebelum deploy
+     ==================================================================== */
+  var CONFIG = {
+    CHAIN_ID: 4663,                       // Robinhood Chain. Base = 8453
+    CHAIN_NAME: "Robinhood Chain",
+    RPC_URL: "https://REPLACE_WITH_RPC",
+    EXPLORER: "https://REPLACE_WITH_EXPLORER",
+    NATIVE: { name: "Ether", symbol: "ETH", decimals: 18 },
+
+    TOKEN: "0x0000000000000000000000000000000000000000", // CA $PATRICK
+    TOKEN_SYMBOL: "PATRICK",
+    TOKEN_DECIMALS: 18,
+
+    WETH: "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+    ROUTER: "0xcaf681a66d020601342297493863e78c959e5cb2", // SwapRouter02
+    QUOTER: "",                            // QuoterV2. Kosongin kalau belum ada
+    FEE: 10000                             // 1% pool
+  };
+  /* ==================================================================== */
+
+  var MSG_SENDER = "0x0000000000000000000000000000000000000001";
+  var ADDRESS_THIS = "0x0000000000000000000000000000000000000002";
+
+  var ROUTER_ABI = [
+    "function exactInputSingle((address tokenIn,address tokenOut,uint24 fee,address recipient,uint256 amountIn,uint256 amountOutMinimum,uint160 sqrtPriceLimitX96)) payable returns (uint256 amountOut)",
+    "function unwrapWETH9(uint256 amountMinimum,address recipient) payable",
+    "function refundETH() payable",
+    "function multicall(bytes[] data) payable returns (bytes[])"
+  ];
+  var ERC20_ABI = [
+    "function balanceOf(address) view returns (uint256)",
+    "function allowance(address,address) view returns (uint256)",
+    "function approve(address,uint256) returns (bool)",
+    "function decimals() view returns (uint8)"
+  ];
+  var QUOTER_ABI = [
+    "function quoteExactInputSingle((address tokenIn,address tokenOut,uint256 amountIn,uint24 fee,uint160 sqrtPriceLimitX96)) returns (uint256 amountOut,uint160 sqrtPriceX96After,uint32 initializedTicksCrossed,uint256 gasEstimate)"
+  ];
+
+  var el = function (id) { return document.getElementById(id); };
+  var statusEl = el("status");
+  var actionBtn = el("actionBtn");
+  var amountIn = el("amountIn");
+  var amountOut = el("amountOut");
+  var paySym = el("paySym");
+  var getSym = el("getSym");
+  var payLabel = el("payLabel");
+  var payBal = el("payBal");
+  var getBal = el("getBal");
+  var tabBuy = el("tabBuy");
+  var tabSell = el("tabSell");
+  var slippage = el("slippage");
+
+  if (!actionBtn || typeof ethers === "undefined") return;
+
+  var mode = "buy";
+  var provider = null;
+  var signer = null;
+  var account = null;
+  var balances = { native: "0", token: "0" };
+  var quoteTimer = null;
+
+  function setStatus(msg, link) {
+    if (!statusEl) return;
+    if (link) {
+      statusEl.innerHTML = msg + ' <a href="' + CONFIG.EXPLORER + '/tx/' + link + '" target="_blank" rel="noopener">View transaction</a>';
+    } else {
+      statusEl.textContent = msg || "";
+    }
+  }
+
+  function short(a) { return a.slice(0, 6) + "..." + a.slice(-4); }
+
+  function fmt(v) {
+    var n = Number(v);
+    if (!isFinite(n)) return "0";
+    if (n === 0) return "0";
+    if (n < 0.0001) return n.toExponential(2);
+    if (n < 1) return n.toFixed(5);
+    if (n < 1000) return n.toFixed(3);
+    return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+
+  function paint() {
+    var buying = mode === "buy";
+    tabBuy.classList.toggle("active", buying);
+    tabSell.classList.toggle("active", !buying);
+    paySym.textContent = buying ? CONFIG.NATIVE.symbol : CONFIG.TOKEN_SYMBOL;
+    getSym.textContent = buying ? CONFIG.TOKEN_SYMBOL : CONFIG.NATIVE.symbol;
+    payLabel.textContent = buying ? "You pay" : "You sell";
+    payBal.textContent = fmt(buying ? balances.native : balances.token);
+    getBal.textContent = fmt(buying ? balances.token : balances.native);
+    if (!account) {
+      actionBtn.textContent = "Connect wallet";
+    } else {
+      actionBtn.textContent = buying ? "Buy " + CONFIG.TOKEN_SYMBOL : "Sell " + CONFIG.TOKEN_SYMBOL;
+    }
+  }
+
+  function setMode(next) {
+    mode = next;
+    amountIn.value = "";
+    amountOut.value = "";
+    setStatus("");
+    paint();
+  }
+
+  tabBuy.addEventListener("click", function () { setMode("buy"); });
+  tabSell.addEventListener("click", function () { setMode("sell"); });
+  var flip = el("flipBtn");
+  if (flip) {
+    flip.addEventListener("click", function () { setMode(mode === "buy" ? "sell" : "buy"); });
+    flip.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setMode(mode === "buy" ? "sell" : "buy"); }
+    });
+  }
+
+  el("maxBtn").addEventListener("click", function () {
+    if (!account) return;
+    var raw = mode === "buy" ? balances.native : balances.token;
+    if (mode === "buy") {
+      var keep = Math.max(Number(raw) - 0.0005, 0); // sisain buat gas
+      amountIn.value = keep ? String(keep) : "0";
+    } else {
+      amountIn.value = raw;
+    }
+    quoteSoon();
+  });
+
+  async function refreshBalances() {
+    if (!account || !provider) return;
+    try {
+      var native = await provider.getBalance(account);
+      balances.native = ethers.formatEther(native);
+      var token = new ethers.Contract(CONFIG.TOKEN, ERC20_ABI, provider);
+      var tb = await token.balanceOf(account);
+      balances.token = ethers.formatUnits(tb, CONFIG.TOKEN_DECIMALS);
+    } catch (err) {
+      balances.token = "0";
+    }
+    paint();
+  }
+
+  async function ensureChain(eth) {
+    var hex = "0x" + CONFIG.CHAIN_ID.toString(16);
+    try {
+      await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] });
+    } catch (err) {
+      if (err && (err.code === 4902 || err.code === -32603)) {
+        await eth.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: hex,
+            chainName: CONFIG.CHAIN_NAME,
+            nativeCurrency: CONFIG.NATIVE,
+            rpcUrls: [CONFIG.RPC_URL],
+            blockExplorerUrls: [CONFIG.EXPLORER]
+          }]
+        });
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  async function connect() {
+    var eth = window.ethereum;
+    if (!eth) {
+      setStatus("No wallet found. Open this page in a wallet browser or install one");
+      return;
+    }
+    setStatus("Connecting");
+    var accounts = await eth.request({ method: "eth_requestAccounts" });
+    await ensureChain(eth);
+    provider = new ethers.BrowserProvider(eth);
+    signer = await provider.getSigner();
+    account = accounts[0];
+    setStatus("Connected as " + short(account));
+    await refreshBalances();
+
+    eth.on && eth.on("accountsChanged", function (a) {
+      account = a && a[0] ? a[0] : null;
+      if (!account) { signer = null; setStatus("Wallet disconnected"); }
+      paint();
+      refreshBalances();
+    });
+    eth.on && eth.on("chainChanged", function () { window.location.reload(); });
+  }
+
+  function quoteSoon() {
+    window.clearTimeout(quoteTimer);
+    quoteTimer = window.setTimeout(quote, 350);
+  }
+
+  async function quote() {
+    var v = parseFloat(amountIn.value);
+    if (!v || v <= 0) { amountOut.value = ""; return; }
+    if (!CONFIG.QUOTER || !provider) { amountOut.value = "-"; return; }
+    try {
+      var buying = mode === "buy";
+      var tokenIn = buying ? CONFIG.WETH : CONFIG.TOKEN;
+      var tokenOut = buying ? CONFIG.TOKEN : CONFIG.WETH;
+      var decIn = buying ? 18 : CONFIG.TOKEN_DECIMALS;
+      var decOut = buying ? CONFIG.TOKEN_DECIMALS : 18;
+      var q = new ethers.Contract(CONFIG.QUOTER, QUOTER_ABI, provider);
+      var res = await q.quoteExactInputSingle.staticCall({
+        tokenIn: tokenIn,
+        tokenOut: tokenOut,
+        amountIn: ethers.parseUnits(String(v), decIn),
+        fee: CONFIG.FEE,
+        sqrtPriceLimitX96: 0
+      });
+      amountOut.value = fmt(ethers.formatUnits(res[0], decOut));
+      return res[0];
+    } catch (err) {
+      amountOut.value = "-";
+      return null;
+    }
+  }
+
+  amountIn.addEventListener("input", quoteSoon);
+
+  function minOut(quoted) {
+    if (!quoted) return 0n;
+    var bps = BigInt(Math.round((100 - Number(slippage.value)) * 100));
+    return (BigInt(quoted) * bps) / 10000n;
+  }
+
+  async function doBuy() {
+    var v = parseFloat(amountIn.value);
+    if (!v || v <= 0) { setStatus("Enter an amount"); return; }
+    var value = ethers.parseEther(String(v));
+    var quoted = await quote();
+    var router = new ethers.Contract(CONFIG.ROUTER, ROUTER_ABI, signer);
+    setStatus("Confirm in your wallet");
+    var tx = await router.exactInputSingle({
+      tokenIn: CONFIG.WETH,
+      tokenOut: CONFIG.TOKEN,
+      fee: CONFIG.FEE,
+      recipient: account,
+      amountIn: value,
+      amountOutMinimum: minOut(quoted),
+      sqrtPriceLimitX96: 0
+    }, { value: value });
+    setStatus("Buying", tx.hash);
+    await tx.wait();
+    setStatus("Bought " + CONFIG.TOKEN_SYMBOL, tx.hash);
+    amountIn.value = "";
+    amountOut.value = "";
+    refreshBalances();
+  }
+
+  async function doSell() {
+    var v = parseFloat(amountIn.value);
+    if (!v || v <= 0) { setStatus("Enter an amount"); return; }
+    var amount = ethers.parseUnits(String(v), CONFIG.TOKEN_DECIMALS);
+    var token = new ethers.Contract(CONFIG.TOKEN, ERC20_ABI, signer);
+    var allowed = await token.allowance(account, CONFIG.ROUTER);
+    if (allowed < amount) {
+      setStatus("Approve " + CONFIG.TOKEN_SYMBOL + " first");
+      var atx = await token.approve(CONFIG.ROUTER, ethers.MaxUint256);
+      setStatus("Approving", atx.hash);
+      await atx.wait();
+    }
+    var quoted = await quote();
+    var least = minOut(quoted);
+    var router = new ethers.Contract(CONFIG.ROUTER, ROUTER_ABI, signer);
+    var swapData = router.interface.encodeFunctionData("exactInputSingle", [{
+      tokenIn: CONFIG.TOKEN,
+      tokenOut: CONFIG.WETH,
+      fee: CONFIG.FEE,
+      recipient: ADDRESS_THIS,
+      amountIn: amount,
+      amountOutMinimum: least,
+      sqrtPriceLimitX96: 0
+    }]);
+    var unwrapData = router.interface.encodeFunctionData("unwrapWETH9", [least, account]);
+    setStatus("Confirm in your wallet");
+    var tx = await router.multicall([swapData, unwrapData]);
+    setStatus("Selling", tx.hash);
+    await tx.wait();
+    setStatus("Sold " + CONFIG.TOKEN_SYMBOL, tx.hash);
+    amountIn.value = "";
+    amountOut.value = "";
+    refreshBalances();
+  }
+
+  actionBtn.addEventListener("click", async function () {
+    try {
+      actionBtn.disabled = true;
+      if (!account) {
+        await connect();
+      } else if (mode === "buy") {
+        await doBuy();
+      } else {
+        await doSell();
+      }
+    } catch (err) {
+      var m = (err && (err.shortMessage || err.reason || err.message)) || "Transaction failed";
+      if (String(m).indexOf("rejected") > -1) m = "Rejected in wallet";
+      setStatus(m);
+    } finally {
+      actionBtn.disabled = false;
+      paint();
+    }
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>
