@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>PATRICK - the chonkiest coin on chain</title>
-<meta name="description" content="PATRICK is a community memecoin. No tax, no VC, no plan. Just chonk" />
-<meta property="og:title" content="PATRICK" />
-<meta property="og:description" content="The chonkiest coin on chain" />
+<title>75 NO - they knocked on seventy five doors</title>
+<meta name="description" content="75 NO. Before the app, before the chain, two founders were told no about seventy five times. Unofficial community meme coin" />
+<meta property="og:title" content="75 NO" />
+<meta property="og:description" content="Seventy five no. One yes" />
 <meta property="og:image" content="assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="assets/favicon.png" />
@@ -16,14 +16,14 @@
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <style>
   :root{
-    --green:#00C805;
-    --green-deep:#00A104;
-    --green-dark:#04310A;
+    --green:#CCFF00;
+    --green-deep:#7A9900;
+    --green-dark:#232B00;
     --white:#FFFFFF;
     --pink:#FFFFFF;      /* accent surface, kept as var for reuse */
-    --pink-deep:#04310A;
-    --ink:#04150A;
-    --cream:#F2FFF3;
+    --pink-deep:#232B00;
+    --ink:#1C180D;
+    --cream:#FAFFE8;
     --nav-h:72px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -103,7 +103,7 @@
   .hero::after{
     content:"";position:absolute;left:50%;top:46%;width:min(820px,120vw);aspect-ratio:1;
     transform:translate(-50%,-50%);border-radius:50%;
-    background:radial-gradient(circle,rgba(255,255,255,.6) 0%,rgba(0,200,5,0) 62%);
+    background:radial-gradient(circle,rgba(255,255,255,.65) 0%,rgba(204,255,0,0) 62%);
     pointer-events:none;
   }
   .title{
@@ -222,7 +222,9 @@
   .merch{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
   .item{background:var(--cream);border:4px solid var(--ink);border-radius:28px;box-shadow:8px 9px 0 var(--ink);padding:16px;transition:transform .16s ease}
   .item:hover{transform:translateY(-6px) rotate(-1.5deg)}
-  .thumb{aspect-ratio:1;border:3px dashed var(--ink);border-radius:18px;background:var(--green);display:grid;place-items:center;font-family:"Luckiest Guy",cursive;letter-spacing:.06em;margin-bottom:12px;text-align:center;padding:12px}
+  .thumb{position:relative;aspect-ratio:1;border:3px dashed var(--ink);border-radius:18px;background:var(--green);display:grid;place-items:center;overflow:hidden;font-family:"Luckiest Guy",cursive;letter-spacing:.06em;margin-bottom:12px;text-align:center;padding:12px}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb:has(img){border-style:solid;padding:0}
   .item h3{font-family:"Luckiest Guy",cursive;font-size:22px;letter-spacing:.04em;margin-bottom:4px}
   .item p{font-weight:600;font-size:14px}
 
@@ -233,13 +235,19 @@
   .disclaimer{font-size:12px;opacity:.7;max-width:56ch;margin:0 auto;line-height:1.6}
 
   .toast{
-    position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);
+    position:fixed;left:50%;bottom:26px;
+    transform:translate(-50%,240%);
+    opacity:0;visibility:hidden;pointer-events:none;
     z-index:99;background:var(--ink);color:var(--green);
     font-family:"Luckiest Guy",cursive;letter-spacing:.06em;
     border:3px solid var(--green);border-radius:999px;padding:11px 22px 8px;
-    transition:transform .28s ease;
+    transition:transform .28s ease,opacity .22s ease,visibility 0s linear .28s;
   }
-  .toast.show{transform:translate(-50%,0)}
+  .toast.show{
+    transform:translate(-50%,0);
+    opacity:1;visibility:visible;
+    transition:transform .28s ease,opacity .22s ease,visibility 0s;
+  }
 
   /* ---------- SWAP ---------- */
   .swap-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
@@ -288,6 +296,24 @@
     border:3px solid var(--green);border-radius:999px;padding:8px 14px 5px;
   }
 
+
+  /* ---------- ARCHIVE ---------- */
+  .sources{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .source{
+    display:flex;flex-direction:column;gap:8px;
+    background:var(--cream);border:4px solid var(--ink);border-radius:28px;
+    box-shadow:8px 9px 0 var(--ink);padding:22px;
+    transition:transform .16s ease,box-shadow .16s ease;
+  }
+  .source:hover{transform:translate(3px,4px);box-shadow:4px 4px 0 var(--ink)}
+  .src-tag{
+    align-self:flex-start;font-family:"Luckiest Guy",cursive;font-size:11px;letter-spacing:.14em;
+    background:var(--ink);color:var(--green);border-radius:999px;padding:6px 12px 3px;
+  }
+  .source h3{font-family:"Luckiest Guy",cursive;font-size:20px;letter-spacing:.03em;line-height:1.15}
+  .source p{font-weight:500;font-size:15px;line-height:1.5;flex:1}
+  .src-go{font-family:"Luckiest Guy",cursive;font-size:14px;letter-spacing:.06em;color:var(--green-deep);text-decoration:underline}
+
   /* ================= RESPONSIVE ================= */
 
   /* laptop / small desktop */
@@ -318,6 +344,7 @@
     .maker > div:last-child{order:-1}          /* canvas di atas kontrol */
     .swap-grid > .card{order:2}
     .merch{grid-template-columns:repeat(2,1fr)}
+    .sources{grid-template-columns:1fr;gap:16px}
     .stats{grid-template-columns:1fr;gap:14px}
     .stat{padding:18px;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:14px}
     .stat b{font-size:clamp(24px,6vw,34px)}
@@ -353,7 +380,7 @@
     .eyebrow{font-size:12px;padding:6px 13px 3px}
     .lead{font-size:16px;line-height:1.55}
 
-    .card,.stat,.item,.canvas-box,.swap{padding:18px;border-width:3px;border-radius:22px;box-shadow:5px 6px 0 var(--ink)}
+    .card,.stat,.item,.canvas-box,.swap,.source{padding:18px;border-width:3px;border-radius:22px;box-shadow:5px 6px 0 var(--ink)}
     .stamp{padding:20px;border-width:3px;border-radius:22px;box-shadow:5px 6px 0 var(--ink);font-size:clamp(22px,6.5vw,30px)}
     .merch{grid-template-columns:1fr;gap:16px}
     .gallery{grid-template-columns:1fr;gap:22px}
@@ -404,13 +431,13 @@
 <header>
   <div class="wrap">
     <nav class="nav">
-      <a href="#top" class="brand">PATRICK</a>
+      <a href="#top" class="brand">75 NO</a>
       <div class="links">
         <a href="#wat">Wat?</a>
         <a href="#gallery">Lore</a>
-        <a href="#maker">Make a chonky</a>
-        <a href="#merch">Merch</a>
-        <a href="#chonkenomics">Chonkenomics</a>
+        <a href="#archive">Archive</a>
+        <a href="#maker">Meme maker</a>
+        <a href="#chonkenomics">Tokenomics</a>
       </div>
       <div class="icons">
         <a class="icon-btn" href="https://t.me/" target="_blank" rel="noopener" aria-label="Telegram">
@@ -428,9 +455,10 @@
     <div class="mobile-menu" id="mobileMenu">
       <a href="#wat">Wat?</a>
       <a href="#gallery">Lore</a>
-      <a href="#maker">Make a chonky</a>
+      <a href="#archive">Archive</a>
+      <a href="#maker">Meme maker</a>
       <a href="#merch">Merch</a>
-      <a href="#chonkenomics">Chonkenomics</a>
+      <a href="#chonkenomics">Tokenomics</a>
       <a class="buy" href="#swap">Buy now</a>
     </div>
   </div>
@@ -444,13 +472,13 @@
       <span class="spark s1">✦</span>
       <span class="spark s2">✦</span>
       <span class="spark s3">✧</span>
-      <img class="coin c1" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
-      <img class="coin c2" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
-      <img class="coin c3" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
-      <img class="coin c4" src="assets/coin.png" alt="" onerror="this.style.display='none'" />
-      <h1 class="title">PATRICK</h1>
+      <img class="coin c1" data-art="coin.png" alt="" />
+      <img class="coin c2" data-art="coin.png" alt="" />
+      <img class="coin c3" data-art="coin.png" alt="" />
+      <img class="coin c4" data-art="coin.png" alt="" />
+      <h1 class="title">75 NO</h1>
       <div class="mascot" id="mascotWrap">
-        <div class="mascot-slot" id="mascotSlot">Drop your mascot at assets/mascot.png</div>
+        <div class="mascot-slot" id="mascotSlot">Drop your art at mascot.png</div>
       </div>
     </div>
   </div>
@@ -466,11 +494,12 @@
       <h2>Wat is this</h2>
       <div class="wat">
         <div class="card">
-          <p class="lead">PATRICK is a coin. That is the whole roadmap. It sits under a rock, it eats, it goes up, it goes down, it eats again</p>
-          <p class="lead">No utility, no vesting cliff, no 40 page deck. The contract is renounced, the liquidity is burned, and the only thing left to do is be chonky together</p>
-          <p class="lead">If you get it, you get it. If you do not, that is also fine, the rock has room</p>
+          <p class="lead">Before twenty five million accounts, before the IPO, before the chain, there were two guys with a deck and a long list of investors who kept saying no</p>
+          <p class="lead">Tenev has said they knocked on about seventy five doors before it worked. Bhatt has put the seed rejections somewhere between seventy and one hundred and ten. Nobody agrees on the count. Everybody agrees on the answer</p>
+          <p class="lead">The reasons they got: nobody wants to trade stocks from a phone, you cannot build consumer products, there are already plenty of brokerages</p>
+          <p class="lead">Every one of those people was wrong. This is a coin for the ones who get told no first</p>
         </div>
-        <div class="stamp">CHONK<br />IS A<br />LIFESTYLE</div>
+        <div class="stamp">EVERY YES<br />IS A NO THAT<br />GOT TIRED</div>
       </div>
     </div>
   </section>
@@ -484,16 +513,47 @@
   <section id="gallery">
     <div class="wrap">
       <span class="eyebrow">The lore</span>
-      <h2>The lore</h2>
+      <h2>Two acts</h2>
+      <p class="lead" style="margin-bottom:22px">One feather, two ways to lose. The poet knocks and nobody opens. The matador stands alone in front of the thing charging at him. Same green, same answer</p>
       <div class="gallery">
         <figure class="art">
-          <img src="assets/art-1.png" alt="The poet in the field" loading="lazy" />
-          <figcaption>The poet</figcaption>
+          <img data-art="art-1.png" alt="The poet in the field" loading="lazy" />
+          <figcaption>Act I - The poet</figcaption>
         </figure>
         <figure class="art">
-          <img src="assets/art-2.png" alt="The matador in the ring" loading="lazy" />
-          <figcaption>The matador</figcaption>
+          <img data-art="art-2.png" alt="The matador in the ring" loading="lazy" />
+          <figcaption>Act II - The matador</figcaption>
         </figure>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ARCHIVE -->
+  <section id="archive">
+    <div class="wrap">
+      <span class="eyebrow">The archive</span>
+      <h2>The archive</h2>
+      <p class="lead" style="margin-bottom:24px">This is not made up. Read it yourself</p>
+      <div class="sources">
+        <a class="source" href="https://www.startuparchive.org/p/baiju-bhatt-on-raising-robinhood-s-seed-round-and-being-rejected-over-70-investors-c32f" target="_blank" rel="noopener">
+          <span class="src-tag">Startup Archive</span>
+          <h3>Rejected by seventy plus investors</h3>
+          <p>Bhatt on the seed round, the reasons they were given, and learning to use the no as fuel</p>
+          <span class="src-go">Read it</span>
+        </a>
+        <a class="source" href="https://en.wikipedia.org/wiki/Vlad_Tenev" target="_blank" rel="noopener">
+          <span class="src-tag">Wikipedia</span>
+          <h3>About seventy five pitches</h3>
+          <p>The seed phase, the capital requirement they had to clear, and the two ventures that came before</p>
+          <span class="src-go">Read it</span>
+        </a>
+        <a class="source" href="https://www.indexventures.com/perspectives/trade-winds-the-rise-reckoning-and-reimagining-of-vlad-tenev/" target="_blank" rel="noopener">
+          <span class="src-tag">Index Ventures</span>
+          <h3>Trade Winds</h3>
+          <p>The long profile. Celeris, Chronos, a handshake in a Palo Alto dive bar, and everything after</p>
+          <span class="src-go">Read it</span>
+        </a>
       </div>
     </div>
   </section>
@@ -501,8 +561,8 @@
   <!-- MEME MAKER -->
   <section id="maker">
     <div class="wrap">
-      <span class="eyebrow">Make a chonky</span>
-      <h2>Make a chonky</h2>
+      <span class="eyebrow">Meme maker</span>
+      <h2>Meme maker</h2>
       <div class="maker">
         <div>
           <div class="card">
@@ -512,11 +572,11 @@
             </div>
             <div class="field">
               <label for="top">Top text</label>
-              <input type="text" id="top" value="WHEN THE CHART" maxlength="40" />
+              <input type="text" id="top" value="THEY SAID NO" maxlength="40" />
             </div>
             <div class="field">
               <label for="bottom">Bottom text</label>
-              <input type="text" id="bottom" value="GOES CHONK" maxlength="40" />
+              <input type="text" id="bottom" value="I SAID OK" maxlength="40" />
             </div>
             <div class="btn-row">
               <button class="btn" id="download">Download meme</button>
@@ -564,7 +624,7 @@
             </div>
             <div class="leg-row">
               <input id="amountOut" type="text" placeholder="0" readonly />
-              <span class="sym" id="getSym">PATRICK</span>
+              <span class="sym" id="getSym">DOORS</span>
             </div>
           </div>
 
@@ -596,8 +656,8 @@
   <!-- CHONKENOMICS -->
   <section id="chonkenomics">
     <div class="wrap">
-      <span class="eyebrow">Chonkenomics</span>
-      <h2>Chonkenomics</h2>
+      <span class="eyebrow">Tokenomics</span>
+      <h2>Tokenomics</h2>
       <div class="stats">
         <div class="stat"><b>1,000,000,000</b><span>Total supply</span></div>
         <div class="stat"><b>0 / 0</b><span>Buy and sell tax</span></div>
@@ -623,19 +683,19 @@
       <h2>Merch</h2>
       <div class="merch">
         <div class="item">
-          <div class="thumb" style="background-image:url(assets/art-1.png);background-size:cover;background-position:center"></div>
-          <h3>Chonk tee</h3>
-          <p>Heavyweight cotton. Fits like a rock</p>
+          <div class="thumb"><img data-art="art-1.png" alt="Chonk tee" loading="lazy" /></div>
+          <h3>The poet tee</h3>
+          <p>Heavyweight cotton. For the ones who keep knocking</p>
         </div>
         <div class="item">
-          <div class="thumb" style="background-image:url(assets/art-2.png);background-size:cover;background-position:center"></div>
-          <h3>Rock cap</h3>
-          <p>For when the sun is up and the chart is not</p>
+          <div class="thumb"><img data-art="art-2.png" alt="Rock cap" loading="lazy" /></div>
+          <h3>Matador cap</h3>
+          <p>For when the bull is coming and you do not move</p>
         </div>
         <div class="item">
           <div class="thumb">assets/merch-3.png</div>
-          <h3>Sticker pack</h3>
-          <p>Twelve stickers. Zero utility. Perfect</p>
+          <h3>75 stickers</h3>
+          <p>One for every door that stayed shut</p>
         </div>
       </div>
     </div>
@@ -645,16 +705,18 @@
 
 <footer>
   <div class="wrap">
-    <div class="foot-mark">PATRICK</div>
+    <div class="foot-mark">75 NO</div>
     <div class="foot-links">
       <a href="#wat">Wat?</a>
-      <a href="#maker">Make a chonky</a>
+      <a href="#gallery">Lore</a>
+      <a href="#archive">Archive</a>
+      <a href="#maker">Meme maker</a>
       <a href="#merch">Merch</a>
-      <a href="#chonkenomics">Chonkenomics</a>
+      <a href="#chonkenomics">Tokenomics</a>
       <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
       <a href="https://x.com/" target="_blank" rel="noopener">X</a>
     </div>
-    <p class="disclaimer">PATRICK is a meme coin with no intrinsic value or expectation of financial return. There is no team, no roadmap, and no promises. Do your own research</p>
+    <p class="disclaimer">75 NO is an unofficial community meme coin. It is not affiliated with, endorsed by, or connected to Robinhood Markets, Inc. or any of its founders, employees, or affiliates. It is fan fiction with a ticker. Zero utility, no roadmap, no promises, no expectation of financial return. Everything on this page about the company's early history comes from the public interviews and articles linked in The Archive. Do your own research</p>
   </div>
 </footer>
 
@@ -665,7 +727,7 @@
   "use strict";
 
   // marquee tracks
-  var ticker = "$ PATRICK";
+  var ticker = "$DOORS";
   var tracks = [document.getElementById("track1"), document.getElementById("track2")];
   tracks.forEach(function (t) {
     if (!t) return;
@@ -692,18 +754,48 @@
     });
   }
 
-  // swap mascot slot for real art if present
+
+  // resolve gambar: coba assets/<file>, lalu <file> di root
+  var ART_PATHS = ["assets/", "./assets/", "", "./"];
+  function resolveArt(node, file, onFail) {
+    var i = 0;
+    function attempt() {
+      if (i >= ART_PATHS.length) { if (onFail) onFail(node); return; }
+      var probe = new Image();
+      var url = ART_PATHS[i] + file;
+      probe.onload = function () {
+        if (node.tagName === "IMG") { node.src = url; node.style.display = "block"; }
+        else { node.style.backgroundImage = "url(" + url + ")"; }
+      };
+      probe.onerror = function () { i += 1; attempt(); };
+      probe.src = url;
+    }
+    attempt();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("img[data-art]"), function (node) {
+    node.style.display = "none";
+    resolveArt(node, node.getAttribute("data-art"), function (n) {
+      if (n.classList.contains("coin")) { n.remove(); return; }
+      var box = n.parentNode;
+      if (box && box.classList.contains("thumb")) { n.remove(); box.textContent = n.alt || "Art"; }
+    });
+  });
+
+  // hero mascot
   var mascotWrap = document.getElementById("mascotWrap");
   if (mascotWrap) {
-    var probe = new Image();
-    probe.onload = function () {
+    var hero = document.createElement("img");
+    hero.alt = "75 NO";
+    hero.style.display = "none";
+    resolveArt(hero, "mascot.png", function () {
+      resolveArt(hero, "art-1.png", null);
+    });
+    hero.addEventListener("load", function () {
       mascotWrap.innerHTML = "";
-      probe.alt = "PATRICK mascot";
-      probe.style.width = "100%";
-      probe.style.display = "block";
-      mascotWrap.appendChild(probe);
-    };
-    probe.src = "assets/mascot.png";
+      hero.style.display = "block";
+      mascotWrap.appendChild(hero);
+    });
   }
 
   // toast
@@ -744,14 +836,14 @@
   var img = null;
 
   function drawPlaceholder() {
-    ctx.fillStyle = "#00C805";
+    ctx.fillStyle = "#CCFF00";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#04150A";
+    ctx.strokeStyle = "#1C180D";
     ctx.lineWidth = 10;
     ctx.setLineDash([22, 18]);
     ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
     ctx.setLineDash([]);
-    ctx.fillStyle = "#04150A";
+    ctx.fillStyle = "#1C180D";
     ctx.font = "36px 'Luckiest Guy', sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Pick a picture", canvas.width / 2, canvas.height / 2);
@@ -763,7 +855,7 @@
     ctx.lineJoin = "round";
     ctx.miterLimit = 2;
     ctx.lineWidth = 16;
-    ctx.strokeStyle = "#04150A";
+    ctx.strokeStyle = "#1C180D";
     ctx.strokeText(text, x, y);
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(text, x, y);
@@ -807,7 +899,7 @@
   if (dl) {
     dl.addEventListener("click", function () {
       var a = document.createElement("a");
-      a.download = "patrick-meme.png";
+      a.download = "75no-meme.png";
       a.href = canvas.toDataURL("image/png");
       a.click();
       say("Downloaded");
@@ -846,8 +938,8 @@
     EXPLORER: "https://REPLACE_WITH_EXPLORER",
     NATIVE: { name: "Ether", symbol: "ETH", decimals: 18 },
 
-    TOKEN: "0x0000000000000000000000000000000000000000", // CA $PATRICK
-    TOKEN_SYMBOL: "PATRICK",
+    TOKEN: "0x0000000000000000000000000000000000000000", // CA $DOORS
+    TOKEN_SYMBOL: "DOORS",
     TOKEN_DECIMALS: 18,
 
     WETH: "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
