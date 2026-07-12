@@ -302,11 +302,12 @@
 
 
   /* ---------- GALLERY ---------- */
-  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
   .art{position:relative;background:var(--white);border:6px solid var(--ink);border-radius:32px;box-shadow:12px 14px 0 var(--ink);overflow:hidden}
   .art:nth-child(1){transform:rotate(-1.6deg)}
   .art:nth-child(2){transform:rotate(1.2deg)}
   .art:nth-child(3){transform:rotate(-1deg)}
+  .art:nth-child(4){transform:rotate(1.4deg)}
   .art img{display:block;width:100%;height:auto;transition:transform .5s ease}
   .art:hover img{transform:scale(1.04)}
   .art figcaption{
@@ -405,7 +406,7 @@
     .merch{grid-template-columns:1fr;gap:16px}
     .gallery{grid-template-columns:1fr;gap:22px}
     .art{border-width:4px;border-radius:22px;box-shadow:6px 7px 0 var(--ink);transform:none}
-    .art:nth-child(1),.art:nth-child(2),.art:nth-child(3){transform:none}
+    .art:nth-child(1),.art:nth-child(2),.art:nth-child(3),.art:nth-child(4){transform:none}
     .art figcaption{font-size:12px;left:10px;bottom:10px}
     .item:hover{transform:none}
 
@@ -547,6 +548,10 @@
         <figure class="art">
           <img data-art="art-3.png" alt="The descent into the pit" loading="lazy" />
           <figcaption>Act III - The descent</figcaption>
+        </figure>
+        <figure class="art">
+          <img data-art="art-4.png" alt="The board" loading="lazy" />
+          <figcaption>Act IV - The board</figcaption>
         </figure>
       </div>
     </div>
