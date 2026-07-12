@@ -286,7 +286,13 @@
     background:var(--green);border:3px solid var(--ink);border-radius:999px;padding:8px 14px 5px;
   }
   .swap-arrow{display:grid;place-items:center;margin:-4px 0 6px}
-  .swap-arrow span{width:38px;height:38px;display:grid;place-items:center;background:var(--ink);color:var(--green);border-radius:999px;font-family:"Luckiest Guy",cursive}
+  .swap-arrow span{
+    width:42px;height:42px;display:grid;place-items:center;
+    background:var(--ink);border:3px solid var(--ink);border-radius:999px;
+    cursor:pointer;transition:transform .18s ease;
+  }
+  .swap-arrow span:hover{transform:rotate(180deg)}
+  .swap-arrow span svg{width:19px;height:19px;fill:var(--green);display:block}
   .swap-meta{display:flex;justify-content:space-between;font-weight:600;font-size:13px;margin:12px 2px}
   .swap-meta select{font:inherit;font-weight:700;background:var(--white);border:2px solid var(--ink);border-radius:10px;padding:3px 8px}
   .btn.block{display:block;width:100%;text-align:center;font-size:18px;padding:15px 20px 12px}
@@ -633,7 +639,7 @@
             </div>
           </div>
 
-          <div class="swap-arrow"><span id="flipBtn" role="button" tabindex="0" aria-label="Flip direction">v</span></div>
+          <div class="swap-arrow"><span id="flipBtn" role="button" tabindex="0" aria-label="Flip direction"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v13.2L4.4 13.6a1 1 0 0 0-1.4 1.4l4.3 4.3a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0-1.4-1.4L9 16.2V3a1 1 0 0 0-2 0Zm10 18V7.8l2.6 2.6a1 1 0 0 0 1.4-1.4l-4.3-4.3a1 1 0 0 0-1.4 0l-4.3 4.3a1 1 0 0 0 1.4 1.4L15 7.8V21a1 1 0 0 0 2 0Z"/></svg></span></div>
 
           <div class="leg">
             <div class="leg-top">
