@@ -76,18 +76,14 @@
     padding:8px 8px 8px 8px;
   }
   .brand{
-    font-family:"Luckiest Guy",cursive;
-    letter-spacing:.06em;
-    font-size:20px;
-    color:var(--green);
-    -webkit-text-stroke:2px var(--ink);
-    paint-order:stroke fill;
-    background:var(--white);
+    display:flex;align-items:center;
+    background:var(--green);
     border:3px solid var(--ink);
     border-radius:999px;
-    padding:6px 18px 3px;
-    white-space:nowrap;
+    padding:7px 16px;
+    line-height:0;
   }
+  .brand img{height:22px;width:auto;display:block}
   .links{display:flex;gap:26px;margin:0 auto;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
   .links a{position:relative;padding:4px 0}
   .links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:3px;background:var(--pink-deep);border-radius:3px;transition:right .22s ease}
@@ -351,7 +347,8 @@
     .links{display:none}
     .burger{display:block}
     .nav{gap:10px;justify-content:space-between;padding:7px}
-    .brand{font-size:17px;padding:6px 14px 3px}
+    .brand{padding:6px 13px}
+    .brand img{height:19px}
     .buy{display:none}
     .icon-btn{width:36px;height:36px}
 
@@ -430,7 +427,8 @@
   /* small phone */
   @media (max-width:400px){
     .title{-webkit-text-stroke:3px var(--ink);text-shadow:4px 5px 0 var(--ink)}
-    .brand{font-size:15px;padding:6px 12px 3px}
+    .brand{padding:5px 11px}
+    .brand img{height:17px}
     .icon-btn{width:33px;height:33px;border-width:2px}
     .coin{display:none}
     .track{font-size:14px;gap:18px}
@@ -454,7 +452,7 @@
 <header>
   <div class="wrap">
     <nav class="nav">
-      <a href="#top" class="brand">75 NO</a>
+      <a href="#top" class="brand" aria-label="75 NO"><img src="wordmark.png" alt="75 NO" /></a>
       <div class="links">
         <a href="#wat">Wat?</a>
         <a href="#gallery">Lore</a>
